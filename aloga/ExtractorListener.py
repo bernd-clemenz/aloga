@@ -1,6 +1,7 @@
 #
 # Listener for the clfParser. It extracts basic data from the parsed lines
 # into a list of dictionaries.
+# (c) 2018 ISC Clemenz & Weinbrecht GmbH
 #
 
 from aloga.clf.clfListener import clfListener

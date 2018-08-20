@@ -1,5 +1,5 @@
 #
-#
+# (c) 2018 ISC Clemenz & Weinbrecht GmbH
 #
 
 import configparser
@@ -15,6 +15,12 @@ CFG = None
 
 
 def init(config_name):
+    """
+    Initialize the access log file analyzed module
+    - Create a logger
+    - Read configuration
+    :param config_name the name ot the config file (ini)
+    """
     global LOG, CFG
 
     # 1. Configuration
@@ -41,6 +47,12 @@ def init(config_name):
 
 
 def reorg_list_in_dict(data):
+    """
+    Reorganize data in memory to prepare their analysis as well
+    as enrichment.
+    :param data: a list of dictionaries with extracted access log information
+    :return: dictionary, keys are the IP-Addresses of the found accessors
+    """
     global LOG
     LOG.info("Reorg of extracted data")
 
@@ -65,13 +77,18 @@ def reorg_list_in_dict(data):
 
 
 def find_location_of_hosts(data):
+    """
+    Searches for non local IP-Addresses
+    :param data: reorganized dictionary with access data
+    :return:
+    """
     global LOG, CFG
     api_key = CFG['aloga']['ipstack.key']
     time_out = int(CFG['aloga']['timeout'])
     url_fmt = 'http://api.ipstack.com/{0}?output=json&access_key=' + api_key
 
     for h in data.keys():
-        if h not in ['127.0.0.1', "0:0:0:0:0:0:0:1"]:
+        if h not in ['127.0.0.1', "0:0:0:0:0:0:0:1"] and not h.startswith('192.'):
             if 'geodata' not in data[h].keys():
                 try:
                     rsp = requests.get(url_fmt.format(h), timeout=time_out)

@@ -5,9 +5,9 @@ grammar for ANTLR4, which was modified to allow IPv6 addresses. Geo-data
 are fetched via [ipstack](http://ipstack.com). A access key is required.
 
 ## Requirements
-* Java 8 Runtime installed and available via PATH environment variable
 * Python 3 installed
 * Internet connection
+* (optional) Java 8 Runtime installed and available via PATH environment variable
 
 [RPYC remote control](https://rpyc.readthedocs.io/en/latest/tutorial/tut1.html)
 
@@ -18,7 +18,7 @@ In the etc/grammar directory do the following:
 ```bash
  java -jar ../tools/antlr-4.7.1-complete.jar -Dlanguage=Python3 clf.g4
 ```
-Move the created files to aloga/clf directory. Don't modify the files, even
+Move the generated files to aloga/clf directory. Don't modify the files, even
 they are not PEP8 compliant.
 
 ## Configuration
@@ -57,3 +57,10 @@ python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data.json
 - [Antlr4](http://www.antlr.org/download.html)
 - [Log file grammar](https://github.com/antlr/grammars-v4/blob/master/clf/clf.g4) 
 - [IPv6](https://tools.ietf.org/html/draft-ietf-6man-text-addr-representation-04)
+
+# Copyrights
+For the grammar file clf.g4:
+
+> BSD License
+> Copyright (c) 2016, Tom Everett
+> All rights reserved.

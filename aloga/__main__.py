@@ -1,5 +1,6 @@
 #
-# python -m aloga --alogfile=C:\tools\apache-tomcat-9.0.10\logs\localhost_access_log.2018-07-28.txt --out=access.json
+# Access log file analyzer.
+# (c) 2018 ISC Clemenz & Weinbrecht GmbH
 #
 
 import aloga
@@ -14,6 +15,11 @@ import sys
 
 
 def parse_file(log_file):
+    """
+    Data extraction.
+    :param log_file: the access log data file name
+    :return: list with extracted data
+    """
     aloga.LOG.info('Loading log file')
     log_stream = FileStream(log_file)
     aloga.LOG.debug('created input stream')
@@ -33,11 +39,22 @@ def parse_file(log_file):
 
 
 def datetime_converter(o):
+    """
+    Called by converter
+    :param o: data item
+    :return: converted item
+    """
     if isinstance(o, datetime.datetime):
         return o.__str__()
 
 
 def save_data(data_file, data_store):
+    """
+    Save the extracted data
+    :param data_file: name of the target file
+    :param data_store: data structure to store as JSON
+    :return:
+    """
     aloga.LOG.info('Saving access data file')
     if len(data_store) > 0:
         with open(data_file, 'w') as f:
