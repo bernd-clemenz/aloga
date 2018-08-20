@@ -1,0 +1,3 @@
+include *.interp
+include *.tokens
+include *.ini
