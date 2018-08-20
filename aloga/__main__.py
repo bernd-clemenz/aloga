@@ -77,9 +77,8 @@ if __name__ == '__main__':
         data = parse_file(args.alogfile)
         data = aloga.reorg_list_in_dict(data)
 
-        data['77.178.156.78'] = dict()
-
         aloga.find_location_of_hosts(data)
+        # TODO add further analysis and reports
         save_data(args.out, data)
     except Exception as x:
         print('ERROR: ' + str(x), file=sys.stderr)
