@@ -57,7 +57,7 @@ def save_data(data_file, data_store):
     """
     aloga.LOG.info('Saving access data file')
     if len(data_store) > 0:
-        with open(data_file, 'w') as f:
+        with open(data_file + '.json', 'w') as f:
             f.write(json.dumps(data_store, indent=2, sort_keys=True, default=datetime_converter))
 
 
@@ -78,6 +78,7 @@ if __name__ == '__main__':
         data = aloga.reorg_list_in_dict(data)
 
         aloga.find_location_of_hosts(data)
+        aloga.basic_statistics(data)
         # TODO add further analysis and reports
         save_data(args.out, data)
     except Exception as x:

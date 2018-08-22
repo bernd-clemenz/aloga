@@ -86,6 +86,10 @@ def find_location_of_hosts(data):
     api_key = CFG['aloga']['ipstack.key']
     time_out = int(CFG['aloga']['timeout'])
     url_fmt = 'http://api.ipstack.com/{0}?output=json&access_key=' + api_key
+    if api_key is None:
+        LOG.warning('No geodata can be fetched, no ipstack.key defined')
+
+    LOG.info("Geodata read")
 
     for h in data.keys():
         if h not in ['127.0.0.1', "0:0:0:0:0:0:0:1"] and not h.startswith('192.'):
@@ -99,3 +103,17 @@ def find_location_of_hosts(data):
                 except Exception as x:
                     LOG.error('Cant read geodata: ' + str(x))
 
+
+def basic_statistics(data):
+    """
+    Basic counters.
+    :param data:  reorganized dictionary with access data
+    :return:
+    """
+    global LOG
+    LOG.info("Basic statistics")
+    for h in data.keys():
+        if 'access' in data[h].keys():
+            data[h]['count'] = len(data[h]['access'])
+        else:
+            data[h]['count'] = 0

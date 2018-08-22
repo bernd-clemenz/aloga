@@ -50,11 +50,19 @@ Setup takes care of resolving the dependencies.
 The module is executable like this:
 
 ```bash
-python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data.json
+python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data
 ```
 
+### CLI parameter
+
+| Name | Description |
+|------|-------------|
+| conf | Name of the configuration file, defaults to aloga.ini |
+| alogfile | Access log file name to interpret |
+| out | Base file name, without extension, of output file(s) |
+
 ## Resources
-- [Antlr4](http://www.antlr.org/download.html)
+- [Antlr4](http://www.antlr.org)
 - [Log file grammar](https://github.com/antlr/grammars-v4/blob/master/clf/clf.g4) 
 - [IPv6](https://tools.ietf.org/html/draft-ietf-6man-text-addr-representation-04)
 
@@ -64,3 +72,5 @@ For the grammar file clf.g4:
 > BSD License
 > Copyright (c) 2016, Tom Everett
 > All rights reserved.
+
+[Antlr 4 License](http://www.antlr.org/license.html)
