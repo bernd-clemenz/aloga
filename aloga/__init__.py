@@ -7,6 +7,8 @@ import logging
 import logging.handlers
 import requests
 import sys
+import matplotlib.pyplot as plt
+import numpy as np
 
 name = 'aloga'
 
@@ -43,6 +45,10 @@ def init(config_name):
     ch.setFormatter(formatter)
     LOG.addHandler(rh)
     LOG.addHandler(ch)
+
+    # 3. init other modules
+    plt.rcdefaults()
+
     LOG.info('ALOGA initialized')
 
 
@@ -117,3 +123,25 @@ def basic_statistics(data):
             data[h]['count'] = len(data[h]['access'])
         else:
             data[h]['count'] = 0
+
+
+def access_histogram(data):
+    """
+    Histogramm per access host
+    :param data: reorganized dictionary with access data
+    :return: a matplotlib plot
+    """
+    global LOG
+    objects = tuple(k for k in data.keys())
+    y_pos = np.arange(len(objects))
+    count = list()
+    for k in data.keys():
+        count.append(data[k]['count'])
+
+    plt.barh(y_pos, count, align='center', alpha=0.5)
+    plt.yticks(y_pos, objects)
+    plt.xlabel('Hosts')
+    plt.title('Access from hosts')
+
+    return plt
+    #plt.show()

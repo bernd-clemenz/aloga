@@ -61,6 +61,10 @@ python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data
 | alogfile | Access log file name to interpret |
 | out | Base file name, without extension, of output file(s) |
 
+## Result
+- a JSON file with parsed access data, where remote hosts are keys
+- simple bar-chart image access histogram as PNG
+
 ## Resources
 - [Antlr4](http://www.antlr.org)
 - [Log file grammar](https://github.com/antlr/grammars-v4/blob/master/clf/clf.g4) 

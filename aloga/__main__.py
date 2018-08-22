@@ -11,6 +11,7 @@ from antlr4 import *
 import argparse
 import datetime
 import json
+import matplotlib.pyplot as plt
 import sys
 
 
@@ -80,7 +81,9 @@ if __name__ == '__main__':
         aloga.find_location_of_hosts(data)
         aloga.basic_statistics(data)
         # TODO add further analysis and reports
+        plot = aloga.access_histogram(data)
         save_data(args.out, data)
+        plot.savefig(args.out + '.png')
     except Exception as x:
         print('ERROR: ' + str(x), file=sys.stderr)
         sys.exit(1)

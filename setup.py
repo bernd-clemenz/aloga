@@ -26,6 +26,8 @@ setuptools.setup(
     install_requires=(
         "argparse",
         "antlr4-python3-runtime",
-        "requests"
+        "requests",
+        "numpy",
+        "matplotlib"
     ),
 )
