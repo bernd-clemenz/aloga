@@ -1,8 +1,8 @@
 #
 # (c) 2018 ISC Clemenz & Weinbrecht GmbH
 #
-
 import configparser
+import dateutil.parser
 import logging
 import logging.handlers
 import requests
@@ -52,6 +52,19 @@ def init(config_name):
     LOG.info('ALOGA initialized')
 
 
+def reorg_date_time(host_rec):
+    """
+    Reorganize structure of date time to ensure universally
+    readable JSON output.
+    :param host_rec: record of extracted data
+    :return: a datetime version of the parsed data
+    """
+    t_str = host_rec['date'] + ' ' + host_rec['time'] + ' ' + host_rec['tz']
+    t_val = dateutil.parser.parse(t_str)
+
+    return t_val
+
+
 def reorg_list_in_dict(data):
     """
     Reorganize data in memory to prepare their analysis as well
@@ -65,16 +78,12 @@ def reorg_list_in_dict(data):
     ip_centric = dict()
     for rec in data:
         if rec['host'] in ip_centric.keys():
-            ip_centric[rec['host']]['access'].append({'date': rec['date'],
-                                                      'time': rec['time'],
-                                                      'tz': rec['tz'],
+            ip_centric[rec['host']]['access'].append({'datetime': reorg_date_time(rec),
                                                       'status': rec['status'],
                                                       'request': rec['request']})
         else:
             host_data = dict()
-            host_data['access'] = [{'date': rec['date'],
-                                    'time': rec['time'],
-                                    'tz': rec['tz'],
+            host_data['access'] = [{'datetime': reorg_date_time(rec),
                                     'status': rec['status'],
                                     'request': rec['request']}]
             ip_centric[rec['host']] = host_data
@@ -144,4 +153,3 @@ def access_histogram(data):
     plt.title('Access from hosts')
 
     return plt
-    #plt.show()
