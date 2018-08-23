@@ -132,6 +132,7 @@ def basic_statistics(data):
             data[h]['count'] = len(data[h]['access'])
         else:
             data[h]['count'] = 0
+            data[h]['access'] = []
 
 
 def access_histogram(data):

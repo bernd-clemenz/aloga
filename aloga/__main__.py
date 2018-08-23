@@ -11,13 +11,13 @@ from antlr4 import *
 import argparse
 import datetime
 import json
-import matplotlib.pyplot as plt
 import sys
 
 
 def parse_file(log_file):
     """
-    Data extraction.
+    Data extraction using ANTLR4 runtime an the generated
+    lexer/parser
     :param log_file: the access log data file name
     :return: list with extracted data
     """
@@ -51,7 +51,7 @@ def datetime_converter(o):
 
 def save_data(data_file, data_store):
     """
-    Save the extracted data
+    Save the extracted data as JSON file
     :param data_file: name of the target file
     :param data_store: data structure to store as JSON
     :return:
@@ -80,8 +80,9 @@ if __name__ == '__main__':
 
         aloga.find_location_of_hosts(data)
         aloga.basic_statistics(data)
-        # TODO add further analysis and reports
         plot = aloga.access_histogram(data)
+        # TODO add further analysis and reports
+
         save_data(args.out, data)
         plot.savefig(args.out + '.png')
     except Exception as x:
