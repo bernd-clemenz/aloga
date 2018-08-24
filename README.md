@@ -69,6 +69,7 @@ python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data
 ## Result
 - a JSON file with parsed access data, where remote hosts are keys
 - simple bar-chart image access histogram as PNG
+- a CSV file with all access data
 
 ## Resources
 - [Antlr4](http://www.antlr.org)
