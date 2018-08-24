@@ -56,10 +56,25 @@ def save_data(data_file, data_store):
     :param data_store: data structure to store as JSON
     :return:
     """
-    aloga.LOG.info('Saving access data file')
+    aloga.LOG.info('Saving access data file as JSON')
     if len(data_store) > 0:
         with open(data_file + '.json', 'w') as f:
             f.write(json.dumps(data_store, indent=2, sort_keys=True, default=datetime_converter))
+
+
+def save_data_as_csv(data_file, data_store):
+    aloga.LOG.info("Saving as CSV")
+    if len(data_store) > 0:
+        with open(data_file + '.csv', 'w') as f:
+            for host in data_store:
+                acc = data_store[host]['access']
+                for l in acc:
+                    line = host + ';'
+                    for k, v in l.items():
+                        line = line + str(v) + ';'
+                    line = line + '\n'
+                    line = line.replace('"', '')
+                    f.write(line)
 
 
 if __name__ == '__main__':
@@ -84,7 +99,10 @@ if __name__ == '__main__':
         # TODO add further analysis and reports
 
         save_data(args.out, data)
+        save_data_as_csv(args.out, data)
         plot.savefig(args.out + '.png')
+
+        aloga.LOG.info('done.')
     except Exception as x:
         print('ERROR: ' + str(x), file=sys.stderr)
         sys.exit(1)

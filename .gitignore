@@ -110,3 +110,6 @@ venv.bak/
 /.idea/
 /acc2.json
 /acc2.png
+/aloga.egg-info/
+/build/
+/dist/
