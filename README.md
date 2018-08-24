@@ -27,11 +27,16 @@ The module is configured by a traditional ini-file.
 |Name | Description |
 |-----|-------------|
 | log.file | Name of the logging file |
+| log.level| Logging output level. Supported values are: DEBUG, INFO, WARN, ERROR, FATAL |
 | timeout | Timeout for HTTP requests |
 | ipstack.key | Access key for ipstack API |
 
 
 ## Installation
+Anaconda users:
+>
+> Antlr4 runtime seems not to be part of Anaconda repositories
+>
 ### From source
 
 ```bash

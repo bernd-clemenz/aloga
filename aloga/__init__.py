@@ -35,7 +35,18 @@ def init(config_name):
 
     # 2. Init logging
     LOG = logging.getLogger('aloga')
-    LOG.setLevel(logging.DEBUG)
+    lv_cfg = CFG['aloga']['log.level']
+    lv_mp = {'INFO': logging.INFO,
+             'WARN': logging.WARNING,
+             'DEBUG': logging.DEBUG,
+             'FATAL': logging.FATAL,
+             'ERROR': logging.ERROR}
+    if lv_cfg is not None and lv_cfg in lv_mp.keys():
+        level = lv_mp[lv_cfg]
+    else:
+        level = logging.INFO
+
+    LOG.setLevel(level)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     rh = logging.handlers.RotatingFileHandler(CFG['aloga']['log.file'],
                                               maxBytes=1024 * 1024,
@@ -122,7 +133,7 @@ def find_location_of_hosts(data):
 def basic_statistics(data):
     """
     Basic counters.
-    :param data:  reorganized dictionary with access data
+    :param data: reorganized dictionary with access data
     :return:
     """
     global LOG
@@ -137,7 +148,7 @@ def basic_statistics(data):
 
 def access_histogram(data):
     """
-    Histogramm per access host
+    Histogram per access host
     :param data: reorganized dictionary with access data
     :return: a matplotlib plot
     """
