@@ -9,25 +9,47 @@ from aloga.clf.clfParser import clfParser
 
 
 class ExtractorListener(clfListener):
-
+    """
+    This listener does the data extraction from the
+    access log files. It has to be registered with
+    the parser.
+    """
     log = None
     all_data = list()
     line_data = None
     line_counter = 0
 
     def __init__(self, log):
+        """
+        Constructor.
+        :param log:  global logger
+        """
         self.log = log
         log.debug("created extractor")
 
     def get_data(self):
+        """
+        get all the extracted data
+        :return: extracted data
+        """
         return self.all_data
 
     def enterLine(self, ctx: clfParser.LineContext):
+        """
+        prepare per line data container.
+        :param ctx: parser context
+        :return:
+        """
         self.line_counter += 1
         # self.log.debug("entered line: {}".format(self.line_counter))
         self.line_data = dict()
 
     def exitLine(self, ctx: clfParser.LineContext):
+        """
+        Collect data in per line storage
+        :param ctx: perser context
+        :return:
+        """
         # self.log.debug("exit line: {}".format(self.line_counter))
         # Host
         host = ctx.host()
@@ -50,4 +72,3 @@ class ExtractorListener(clfListener):
 
         self.all_data.append(self.line_data)
         print(self.line_data)
-
