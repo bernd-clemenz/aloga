@@ -71,4 +71,4 @@ class ExtractorListener(clfListener):
         self.line_data['status'] = str(status.STRING())
 
         self.all_data.append(self.line_data)
-        print(self.line_data)
+        # print(self.line_data)
