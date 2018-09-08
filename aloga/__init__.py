@@ -191,22 +191,23 @@ def basic_statistics(data):
     LOG.info("Basic statistics")
     for h in data.keys():
         if 'access' in data[h].keys():
-            data[h]['count'] = len(data[h]['access'])
-            access_data = data[h]['access']
+            item = data[h]
+            access_data = item['access']
+            item['count'] = len(access_data)
             info_count, ok_count,\
             redir_count,\
             client_error_count,\
             server_error_count,\
             other_count = status_type_counters(access_data)
-            data[h]['info_count'] = info_count
-            data[h]['ok_count'] = ok_count
-            data[h]['redir_count'] = redir_count
-            data[h]['client_error_count'] = client_error_count
-            data[h]['server_error_count'] = server_error_count
-            data[h]['other_count'] = other_count
+            item['info_count'] = info_count
+            item['ok_count'] = ok_count
+            item['redir_count'] = redir_count
+            item['client_error_count'] = client_error_count
+            item['server_error_count'] = server_error_count
+            item['other_count'] = other_count
             min_date, max_date = time_range(access_data)
-            data[h]['min_date'] = min_date
-            data[h]['max_date'] = max_date
+            item['min_date'] = min_date
+            item['max_date'] = max_date
         else:
             data[h]['count'] = 0
             data[h]['info_count'] = 0
