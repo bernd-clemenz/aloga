@@ -132,11 +132,13 @@ def find_location_of_hosts(data):
 
 def status_type_counters(access_data):
     """
-
+    Count the different HTTP-status code types.
     :param access_data: internal data store
     :return: sequence with counters for frequency of
     status http status code types.
     """
+    global LOG
+    LOG.debug("Counting response code types")
     info_count = 0
     ok_count = 0
     redir_count = 0
@@ -161,6 +163,24 @@ def status_type_counters(access_data):
     return info_count, ok_count, redir_count, client_error_count, server_error_count, other_count
 
 
+def time_of_access(access_data):
+    for d in access_data:
+        yield d['datetime']
+
+
+def time_range(access_data):
+    """
+    Find the range of minimum and maximum date in access data per client
+    :param access_data: client access data
+    :return: minimum and maximum date as sequence
+    """
+    global LOG
+    LOG.debug("Time range")
+    max_date = max(time_of_access(access_data))
+    min_date = min(time_of_access(access_data))
+    return min_date, max_date
+
+
 def basic_statistics(data):
     """
     Basic counters.
@@ -172,15 +192,31 @@ def basic_statistics(data):
     for h in data.keys():
         if 'access' in data[h].keys():
             data[h]['count'] = len(data[h]['access'])
-            info_count, ok_count, redir_count, client_error_count, server_error_count, other_count = status_type_counters(data[h]['access'])
+            access_data = data[h]['access']
+            info_count, ok_count,\
+            redir_count,\
+            client_error_count,\
+            server_error_count,\
+            other_count = status_type_counters(access_data)
             data[h]['info_count'] = info_count
             data[h]['ok_count'] = ok_count
             data[h]['redir_count'] = redir_count
             data[h]['client_error_count'] = client_error_count
             data[h]['server_error_count'] = server_error_count
             data[h]['other_count'] = other_count
+            min_date, max_date = time_range(access_data)
+            data[h]['min_date'] = min_date
+            data[h]['max_date'] = max_date
         else:
             data[h]['count'] = 0
+            data[h]['info_count'] = 0
+            data[h]['ok_count'] = 0
+            data[h]['redir_count'] = 0
+            data[h]['client_error_count'] = 0
+            data[h]['server_error_count'] = 0
+            data[h]['other_count'] = 0
+            data[h]['min_date'] = None
+            data[h]['max_date'] = None
             data[h]['access'] = []
 
 
