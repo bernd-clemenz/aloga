@@ -130,6 +130,37 @@ def find_location_of_hosts(data):
                     LOG.error('Cant read geodata: ' + str(x))
 
 
+def status_type_counters(access_data):
+    """
+
+    :param access_data: internal data store
+    :return: sequence with counters for frequency of
+    status http status code types.
+    """
+    info_count = 0
+    ok_count = 0
+    redir_count = 0
+    client_error_count = 0
+    server_error_count = 0
+    other_count = 0
+    for d in access_data:
+        status = int(d['status'])
+        if 100 <= status < 200:
+            info_count += 1
+        elif 200 <= status < 300:
+            ok_count += 1
+        elif 300 <= status < 400:
+            redir_count += 1
+        elif 400 <= status < 500:
+            client_error_count += 1
+        elif 500 <= status < 600:
+            server_error_count += 1
+        else:
+            other_count += 1
+
+    return info_count, ok_count, redir_count, client_error_count, server_error_count, other_count
+
+
 def basic_statistics(data):
     """
     Basic counters.
@@ -141,6 +172,13 @@ def basic_statistics(data):
     for h in data.keys():
         if 'access' in data[h].keys():
             data[h]['count'] = len(data[h]['access'])
+            info_count, ok_count, redir_count, client_error_count, server_error_count, other_count = status_type_counters(data[h]['access'])
+            data[h]['info_count'] = info_count
+            data[h]['ok_count'] = ok_count
+            data[h]['redir_count'] = redir_count
+            data[h]['client_error_count'] = client_error_count
+            data[h]['server_error_count'] = server_error_count
+            data[h]['other_count'] = other_count
         else:
             data[h]['count'] = 0
             data[h]['access'] = []

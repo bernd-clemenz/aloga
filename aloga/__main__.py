@@ -63,6 +63,12 @@ def save_data(data_file, data_store):
 
 
 def save_data_as_csv(data_file, data_store):
+    """
+    Saves extracted data as CSV.
+    :param data_file: name of the file to write
+    :param data_store: internal data container
+    :return:
+    """
     aloga.LOG.info("Saving as CSV")
     if len(data_store) > 0:
         with open(data_file + '.csv', 'w') as f:
@@ -77,6 +83,37 @@ def save_data_as_csv(data_file, data_store):
                     f.write(line)
 
 
+def save_results(r_data, r_plot, out_base_name):
+    """
+    All save operations in one call
+    :param r_data: internal data container
+    :param r_plot: plot result
+    :param out_base_name: base name of output files
+    :return:
+    """
+    save_data(out_base_name, r_data)
+    save_data_as_csv(out_base_name, r_data)
+    r_plot.savefig(out_base_name + '.png')
+
+
+def analyze_log_file(alogfile):
+    """
+    Do all analysis in one shot
+    :param alogfile: file to analyze
+    :return: internal data store, matplotlib plot as sequence
+    """
+    aloga.LOG.info("analyze")
+    r_data = parse_file(alogfile)
+    r_data = aloga.reorg_list_in_dict(r_data)
+
+    aloga.find_location_of_hosts(r_data)
+    aloga.basic_statistics(r_data)
+    r_plot = aloga.access_histogram(r_data)
+
+    # TODO add further analysis and reports
+    return r_data, r_plot
+
+
 if __name__ == '__main__':
     # 1. Define arguments and read commandline
     arg_parser = argparse.ArgumentParser(description="Simple access log analyzer.")
@@ -88,19 +125,13 @@ if __name__ == '__main__':
     try:
         if args.alogfile is None:
             raise Exception('Need a logfile parameter')
+        if args.out is None:
+            raise Exception('Need a out-file-basename parameter')
 
         aloga.init(args.conf)
-        data = parse_file(args.alogfile)
-        data = aloga.reorg_list_in_dict(data)
 
-        aloga.find_location_of_hosts(data)
-        aloga.basic_statistics(data)
-        plot = aloga.access_histogram(data)
-        # TODO add further analysis and reports
-
-        save_data(args.out, data)
-        save_data_as_csv(args.out, data)
-        plot.savefig(args.out + '.png')
+        data, plot = analyze_log_file(args.alogfile)
+        save_results(data, plot, args.out)
 
         aloga.LOG.info('done.')
     except Exception as x:
