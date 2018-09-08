@@ -1,5 +1,5 @@
 #
-# Log file analysis.
+# Access-Log file analysis.
 # (c) ISC Clemenz & Weinbrecht GmbH 2018
 #
 

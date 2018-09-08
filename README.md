@@ -8,8 +8,7 @@ are fetched via [ipstack](http://ipstack.com). A access key is required.
 * Python 3 installed
 * Internet connection
 * (optional) Java 8 Runtime installed and available via PATH environment variable
-
-[RPYC remote control](https://rpyc.readthedocs.io/en/latest/tutorial/tut1.html)
+  if rebuilding or modification of the grammar is required.
 
 ## Build Lexer/Parser
 In case the grammar should be extended to cater for more cases:
@@ -46,7 +45,7 @@ git clone git@github.com:bernd-clemenz/aloga.git
 Switch to the installation directory and run:
 
 ```bash
-python setup.py
+python setup.py install
 ```
 
 Setup takes care of resolving the dependencies.
