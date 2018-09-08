@@ -67,6 +67,8 @@ python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data
 
 ## Result
 - a JSON file with parsed access data, where remote hosts are keys
+  - some basic statistical evaluations per host. Frequency of HTTP-Status-Types,
+    GEO location data.
 - simple bar-chart image access histogram as PNG
 - a CSV file with all access data
 
