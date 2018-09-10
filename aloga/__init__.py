@@ -5,6 +5,7 @@ import configparser
 import dateutil.parser
 import logging
 import logging.handlers
+import os
 import requests
 import sys
 import matplotlib.pyplot as plt
@@ -30,6 +31,9 @@ def init(config_name):
         CFG = configparser.ConfigParser()
     else:
         raise Exception('Unsupported Python major version')
+        
+    if not os.path.isfile(config_name):
+        raise Exception('config file missing')
 
     CFG.read(config_name)
 
