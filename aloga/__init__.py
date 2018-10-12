@@ -118,6 +118,7 @@ def find_location_of_hosts(data):
     url_fmt = 'http://api.ipstack.com/{0}?output=json&access_key=' + api_key
     if api_key is None:
         LOG.warning('No geodata can be fetched, no ipstack.key defined')
+        return
 
     LOG.info("Geodata read")
 
@@ -125,6 +126,7 @@ def find_location_of_hosts(data):
         if h not in ['127.0.0.1', "0:0:0:0:0:0:0:1"] and not h.startswith('192.'):
             if 'geodata' not in data[h].keys():
                 try:
+                    LOG.info("  {0}".format(h))
                     rsp = requests.get(url_fmt.format(h), timeout=time_out)
                     if rsp.status_code == requests.codes.ok:
                         data[h]['geodata'] = rsp.json()
