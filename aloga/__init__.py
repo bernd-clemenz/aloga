@@ -107,6 +107,16 @@ def reorg_list_in_dict(data):
     return ip_centric
 
 
+def _is_local_ip(ip):
+    """
+    Find if a address is from the local
+    network.
+    :param ip: the ip address to check
+    :return: True if detected as a 'local'-Network address
+    """
+    return False if ip in ['127.0.0.1', "0:0:0:0:0:0:0:1"] or not ip.startswith('192.') else True
+
+
 def find_location_of_hosts(data):
     """
     Searches for non local IP-Addresses
@@ -124,17 +134,16 @@ def find_location_of_hosts(data):
     LOG.info("Geodata read")
 
     for h in data.keys():
-        if h not in ['127.0.0.1', "0:0:0:0:0:0:0:1"] and not h.startswith('192.'):
-            if 'geodata' not in data[h].keys():
-                try:
-                    LOG.info("  {0}".format(h))
-                    rsp = requests.get(url_fmt.format(h), timeout=time_out)
-                    if rsp.status_code == requests.codes.ok:
-                        data[h]['geodata'] = rsp.json()
-                    else:
-                        LOG.warning('Error accessing ipstack API: ' + str(rsp.status_code))
-                except Exception as x:
-                    LOG.error('Cant read geodata: ' + str(x))
+        if not _is_local_ip(h) and 'geodata' not in data[h].keys():
+            try:
+                LOG.info("  for {0}".format(h))
+                rsp = requests.get(url_fmt.format(h), timeout=time_out)
+                if rsp.status_code == requests.codes.ok:
+                    data[h]['geodata'] = rsp.json()
+                else:
+                    LOG.warning('Error accessing ipstack API: ' + str(rsp.status_code))
+            except Exception as x:
+                LOG.error('Cant read geodata: ' + str(x))
 
 
 def status_type_counters(access_data):
