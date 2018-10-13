@@ -86,3 +86,11 @@ For the grammar file clf.g4:
 > All rights reserved.
 
 [Antlr 4 License](http://www.antlr.org/license.html)
+
+PNG-Weltkarte
+![Die Weltkarte](etc/world-map-blank.png) 
+Lizenzbedingungen: Diese Karte ist eine PUBLIC DOMAIN Datei,
+von der Central Intelligence Agency's World Factbook zur Verfügung gestellt.
+[Quelle](https://www.weltkarte.com/weltkarten/weltkarten-und-weltatlas/weltkarte-blank-vektorgrafik.htm)
+
+[SVG - Worldmap](https://commons.wikimedia.org/wiki/File:BlankMap-World6.svg)
