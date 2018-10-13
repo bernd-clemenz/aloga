@@ -1,4 +1,5 @@
 #
+# -*- coding: utf-8-*-
 # Listener for the clfParser. It extracts basic data from the parsed lines
 # into a list of dictionaries.
 # (c) 2018 ISC Clemenz & Weinbrecht GmbH
@@ -47,7 +48,7 @@ class ExtractorListener(clfListener):
     def exitLine(self, ctx: clfParser.LineContext):
         """
         Collect data in per line storage
-        :param ctx: perser context
+        :param ctx: parser context
         :return:
         """
         # self.log.debug("exit line: {}".format(self.line_counter))
@@ -71,4 +72,3 @@ class ExtractorListener(clfListener):
         self.line_data['status'] = str(status.STRING())
 
         self.all_data.append(self.line_data)
-        # print(self.line_data)

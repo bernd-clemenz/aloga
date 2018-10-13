@@ -1,4 +1,5 @@
 #
+# -*- coding: utf-8-*-
 # (c) 2018 ISC Clemenz & Weinbrecht GmbH
 #
 import configparser
@@ -170,6 +171,11 @@ def status_type_counters(access_data):
 
 
 def time_of_access(access_data):
+    """
+
+    :param access_data:
+    :return: the next datetime-entry
+    """
     for d in access_data:
         yield d['datetime']
 
