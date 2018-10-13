@@ -54,7 +54,7 @@ Setup takes care of resolving the dependencies.
 The module is executable like this:
 
 ```bash
-python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data
+python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data --nogeo=False
 ```
 
 ### CLI parameter
@@ -64,6 +64,7 @@ python -m aloga --conf=aloga.ini --alogafile=access_log --out=access_data
 | conf | Name of the configuration file, defaults to aloga.ini |
 | alogfile | Access log file name to interpret |
 | out | Base file name, without extension, of output file(s) |
+| nogeo | deactivates reading fetching of geo-data, defaults to True |
 
 ## Result
 - a JSON file with parsed access data, where remote hosts are keys
