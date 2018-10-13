@@ -10,19 +10,19 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aloga",
-    version="0.0.5",
+    version="0.0.6",
     author="ISC Clemenz & Weinbrecht GmbH",
     author_email="info@isc-software.de",
-    description="Log file analysis",
+    description="Access-log file analysis",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/bernd-clemenz/aloga",
     packages=setuptools.find_packages(),
-    classifiers=(
+    classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-    ),
+    ],
     install_requires=(
         "argparse",
         "antlr4-python3-runtime",

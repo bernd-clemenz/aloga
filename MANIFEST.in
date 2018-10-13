@@ -1,2 +1,2 @@
-include *.interp
-include *.tokens
+recursive-include aloga/clf *.interp
+recursive-include aloga/clf *.tokens
