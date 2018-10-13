@@ -68,7 +68,7 @@ def init(config_name):
     LOG.info('ALOGA initialized')
 
 
-def reorg_date_time(host_rec):
+def _reorg_date_time(host_rec):
     """
     Reorganize structure of date time to ensure universally
     readable JSON output.
@@ -94,12 +94,12 @@ def reorg_list_in_dict(data):
     ip_centric = dict()
     for rec in data:
         if rec['host'] in ip_centric.keys():
-            ip_centric[rec['host']]['access'].append({'datetime': reorg_date_time(rec),
+            ip_centric[rec['host']]['access'].append({'datetime': _reorg_date_time(rec),
                                                       'status': rec['status'],
                                                       'request': rec['request']})
         else:
             host_data = dict()
-            host_data['access'] = [{'datetime': reorg_date_time(rec),
+            host_data['access'] = [{'datetime': _reorg_date_time(rec),
                                     'status': rec['status'],
                                     'request': rec['request']}]
             ip_centric[rec['host']] = host_data
@@ -114,7 +114,7 @@ def _is_local_ip(ip):
     :param ip: the ip address to check
     :return: True if detected as a 'local'-Network address
     """
-    return False if ip in ['127.0.0.1', "0:0:0:0:0:0:0:1"] or not ip.startswith('192.') else True
+    return True if ip in ['127.0.0.1', "0:0:0:0:0:0:0:1"] or not ip.startswith('192.') else False
 
 
 def find_location_of_hosts(data):
@@ -131,8 +131,8 @@ def find_location_of_hosts(data):
         LOG.warning('No geodata can be fetched, no ipstack.key defined')
         return
 
-    LOG.info("Geodata read")
-
+    LOG.info("Geo-data read")
+    geo_read_count = 0
     for h in data.keys():
         if not _is_local_ip(h) and 'geodata' not in data[h].keys():
             try:
@@ -140,13 +140,15 @@ def find_location_of_hosts(data):
                 rsp = requests.get(url_fmt.format(h), timeout=time_out)
                 if rsp.status_code == requests.codes.ok:
                     data[h]['geodata'] = rsp.json()
+                    geo_read_count += 1
                 else:
                     LOG.warning('Error accessing ipstack API: ' + str(rsp.status_code))
             except Exception as x:
-                LOG.error('Cant read geodata: ' + str(x))
+                LOG.error('Cant read geo-data: ' + str(x))
+    LOG.info('  Geo-data read count: {}'.format(geo_read_count))
 
 
-def status_type_counters(access_data):
+def _status_type_counters(access_data):
     """
     Count the different HTTP-status code types.
     :param access_data: internal data store
@@ -179,7 +181,7 @@ def status_type_counters(access_data):
     return info_count, ok_count, redir_count, client_error_count, server_error_count, other_count
 
 
-def time_of_access(access_data):
+def _time_of_access(access_data):
     """
 
     :param access_data:
@@ -189,7 +191,7 @@ def time_of_access(access_data):
         yield d['datetime']
 
 
-def time_range(access_data):
+def _time_range(access_data):
     """
     Find the range of minimum and maximum date in access data per client
     :param access_data: client access data
@@ -197,8 +199,8 @@ def time_range(access_data):
     """
     global LOG
     LOG.debug("Time range")
-    max_date = max(time_of_access(access_data))
-    min_date = min(time_of_access(access_data))
+    max_date = max(_time_of_access(access_data))
+    min_date = min(_time_of_access(access_data))
     return min_date, max_date
 
 
@@ -215,18 +217,19 @@ def basic_statistics(data):
             item = data[h]
             access_data = item['access']
             item['count'] = len(access_data)
-            info_count, ok_count,\
-            redir_count,\
-            client_error_count,\
-            server_error_count,\
-            other_count = status_type_counters(access_data)
+            info_count,\
+                ok_count,\
+                redir_count,\
+                client_error_count,\
+                server_error_count,\
+                other_count = _status_type_counters(access_data)
             item['info_count'] = info_count
             item['ok_count'] = ok_count
             item['redir_count'] = redir_count
             item['client_error_count'] = client_error_count
             item['server_error_count'] = server_error_count
             item['other_count'] = other_count
-            min_date, max_date = time_range(access_data)
+            min_date, max_date = _time_range(access_data)
             item['min_date'] = min_date
             item['max_date'] = max_date
         else:

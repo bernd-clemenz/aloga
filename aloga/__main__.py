@@ -6,38 +6,11 @@
 
 import aloga
 from aloga.ExtractorListener import ExtractorListener
-from aloga.clf.clfParser import clfParser
-from aloga.clf.clfLexer import clfLexer
-from antlr4 import *
 import argparse
 import datetime
 import json
+import os
 import sys
-
-
-def parse_file(log_file):
-    """
-    Data extraction using ANTLR4 runtime an the generated
-    lexer/parser
-    :param log_file: the access log data file name
-    :return: list with extracted data
-    """
-    aloga.LOG.info('Loading log file')
-    log_stream = FileStream(log_file)
-    aloga.LOG.debug('created input stream')
-    lexer = clfLexer(log_stream)
-    aloga.LOG.debug('created lexer')
-    stream = CommonTokenStream(lexer)
-    aloga.LOG.debug('created token stream')
-    parser = clfParser(stream)
-    aloga.LOG.debug('created parser')
-    walker = ParseTreeWalker()
-    tree = parser.log()
-    extractor = ExtractorListener(aloga.LOG)
-    walker.walk(extractor, tree)
-    aloga.LOG.debug('parsing done')
-
-    return extractor.get_data()
 
 
 def datetime_converter(o):
@@ -97,6 +70,25 @@ def save_results(r_data, r_plot, out_base_name):
     r_plot.savefig(out_base_name + '.png')
 
 
+def _check_for_old_data(out_file_base_name):
+    aloga.LOG.info("check for existing data")
+    fn = out_file_base_name + '.json'
+    if os.path.isfile(fn):
+        aloga.LOG.debug("  {0} already exists.".format(fn))
+
+
+def _load_old_data(out_file_base_name):
+    aloga.LOG.info("load existing data")
+
+
+def _handle_old_data(out_file_base_name):
+    aloga.LOG.info("handle existing data")
+    if _check_for_old_data(out_file_base_name):
+        return _load_old_data(out_file_base_name)
+
+    return None
+
+
 def analyze_log_file(alogfile):
     """
     Do all analysis in one shot
@@ -104,7 +96,7 @@ def analyze_log_file(alogfile):
     :return: internal data store, matplotlib plot as sequence
     """
     aloga.LOG.info("analyze")
-    r_data = parse_file(alogfile)
+    r_data = ExtractorListener.parse_log_file(aloga.LOG, alogfile)
     r_data = aloga.reorg_list_in_dict(r_data)
 
     aloga.find_location_of_hosts(r_data)
@@ -117,7 +109,7 @@ def analyze_log_file(alogfile):
 
 if __name__ == '__main__':
     # 1. Define arguments and read commandline
-    arg_parser = argparse.ArgumentParser(description="Simple access log analyzer.")
+    arg_parser = argparse.ArgumentParser(description="Simple access-log analyzer.")
     arg_parser.add_argument('--conf', type=str, default='aloga.ini')
     arg_parser.add_argument('--alogfile', type=str, default=None)
     arg_parser.add_argument('--out', type=str, default=None)
@@ -130,6 +122,8 @@ if __name__ == '__main__':
             raise Exception('Need a out-file-basename parameter')
 
         aloga.init(args.conf)
+
+        old_data = _handle_old_data(args.out)
 
         data, plot = analyze_log_file(args.alogfile)
         save_results(data, plot, args.out)
