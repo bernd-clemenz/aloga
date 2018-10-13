@@ -8,6 +8,7 @@ import aloga
 from aloga.ExtractorListener import ExtractorListener
 import argparse
 import datetime
+import dateutil
 import json
 import os
 import sys
@@ -71,17 +72,37 @@ def save_results(r_data, r_plot, out_base_name):
 
 
 def _check_for_old_data(out_file_base_name):
+    """
+    Check for results of previous operations.
+    :param out_file_base_name: the basic output file name
+    :return: True if it already exits, otherwise False
+    """
     aloga.LOG.info("check for existing data")
     fn = out_file_base_name + '.json'
-    if os.path.isfile(fn):
+    if os.path.isfile(fn) and os.path.getsize(fn) > 0:
         aloga.LOG.debug("  {0} already exists.".format(fn))
+        return True
+    return False
 
 
 def _load_old_data(out_file_base_name):
+    """
+    Load data from previous operations.
+    :param out_file_base_name: the basic output file name
+    :return: content as dictionary
+    """
     aloga.LOG.info("load existing data")
+    with open(out_file_base_name + '.json', "r") as f:
+        prev_date = json.load(f)
+    aloga.LOG.debug("   date time conversion")
+    for host, access_data in prev_date.items():
+        for record in access_data['access']:
+            record['datetime'] = dateutil.parser.parse(record['datetime'])
+
+    return prev_date
 
 
-def _handle_old_data(out_file_base_name):
+def _old_data(out_file_base_name):
     aloga.LOG.info("handle existing data")
     if _check_for_old_data(out_file_base_name):
         return _load_old_data(out_file_base_name)
@@ -89,17 +110,21 @@ def _handle_old_data(out_file_base_name):
     return None
 
 
-def analyze_log_file(alogfile):
+def analyze_log_file(alogfile, nogeo, old_data):
     """
-    Do all analysis in one shot
+    Do all analysis in one shot.
     :param alogfile: file to analyze
+    :param nogeo: flag, controls if geo-ip data are fetched, defaults to True
+                  NO geo-data are fetched.
     :return: internal data store, matplotlib plot as sequence
     """
     aloga.LOG.info("analyze")
     r_data = ExtractorListener.parse_log_file(aloga.LOG, alogfile)
     r_data = aloga.reorg_list_in_dict(r_data)
-
-    aloga.find_location_of_hosts(r_data)
+    if old_data is not None:
+        r_data = aloga.merge(old_data, r_data)
+    if not nogeo:
+        aloga.find_location_of_hosts(r_data)
     aloga.basic_statistics(r_data)
     r_plot = aloga.access_histogram(r_data)
 
@@ -112,6 +137,7 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description="Simple access-log analyzer.")
     arg_parser.add_argument('--conf', type=str, default='aloga.ini')
     arg_parser.add_argument('--alogfile', type=str, default=None)
+    arg_parser.add_argument('--nogeo', type=bool, default=True)
     arg_parser.add_argument('--out', type=str, default=None)
     args = arg_parser.parse_args()
 
@@ -123,9 +149,9 @@ if __name__ == '__main__':
 
         aloga.init(args.conf)
 
-        old_data = _handle_old_data(args.out)
+        old_data = _old_data(args.out)
 
-        data, plot = analyze_log_file(args.alogfile)
+        data, plot = analyze_log_file(args.alogfile, args.nogeo, old_data)
         save_results(data, plot, args.out)
 
         aloga.LOG.info('done.')

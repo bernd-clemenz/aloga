@@ -114,3 +114,4 @@ venv.bak/
 /build/
 /dist/
 /aloga.ini
+/etc/example/

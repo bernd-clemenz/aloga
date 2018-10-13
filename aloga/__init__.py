@@ -107,6 +107,55 @@ def reorg_list_in_dict(data):
     return ip_centric
 
 
+def _is_record_in_access_data(access_data, record):
+    for original in access_data:
+        if original['datetime'] == record['datetime'] and original['request'] == record['request']:
+            return True
+
+    return False
+
+
+def merge(target, new_data):
+    """
+    Merges access data.
+    :param target: existing data, target of merge
+    :param new_data: the data to merge same structure as target
+    :return: target if new_data and target are not None,
+             new_data if target is None,
+             target if new_data is none
+    """
+    global LOG
+    LOG.info("Merging new data in store")
+
+    if new_data is None:
+        return target
+
+    if target is None:
+        return new_data
+
+    # Iterate the new_data hosts
+    for host, access_data in new_data.items():
+        LOG.debug("new: " + host)
+        if host in target:
+            #
+            # potentially new access data for a already known host
+            #
+            LOG.debug("   found in old data")
+            target_access = target[host]['access']
+            for record in access_data['access']:
+                if not _is_record_in_access_data(target_access, record):
+                    LOG.debug("       found new access: {0} -> {1}".format(record['datetime'], record['request']))
+                    target_access.append(record)
+        else:
+            #
+            # a new host, data are just taken
+            #
+            LOG.info("   new host found: {0}".format(host))
+            target[host] = access_data
+
+    return target
+
+
 def _is_local_ip(ip):
     """
     Find if a address is from the local
