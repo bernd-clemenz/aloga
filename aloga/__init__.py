@@ -301,15 +301,20 @@ def access_histogram(data):
     :return: a matplotlib plot
     """
     global LOG
-    objects = tuple(k for k in data.keys())
+    LOG.info('Histogram')
+    items = data.keys()
+    items = filter(_is_local_ip, items)
+    items = list(filter(lambda it: data[it]['count'] > 5, items))
+    objects = tuple(k for k in items)
     y_pos = np.arange(len(objects))
     count = list()
-    for k in data.keys():
+    for k in items:
         count.append(data[k]['count'])
 
     plt.barh(y_pos, count, align='center', alpha=0.5)
     plt.yticks(y_pos, objects)
-    plt.xlabel('Hosts')
+    plt.xlabel('Access counter')
+    plt.ylabel('hosts')
     plt.title('Access from hosts')
 
     return plt
