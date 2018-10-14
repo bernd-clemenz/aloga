@@ -265,7 +265,8 @@ def basic_statistics(data):
         if 'access' in data[h].keys():
             item = data[h]
             access_data = item['access']
-            item['count'] = len(access_data)
+            all_count = len(access_data)
+            item['count'] = all_count
             info_count,\
                 ok_count,\
                 redir_count,\
@@ -281,40 +282,82 @@ def basic_statistics(data):
             min_date, max_date = _time_range(access_data)
             item['min_date'] = min_date
             item['max_date'] = max_date
+            item['client_error_quota'] = client_error_count / all_count
         else:
-            data[h]['count'] = 0
-            data[h]['info_count'] = 0
-            data[h]['ok_count'] = 0
-            data[h]['redir_count'] = 0
-            data[h]['client_error_count'] = 0
-            data[h]['server_error_count'] = 0
-            data[h]['other_count'] = 0
-            data[h]['min_date'] = None
-            data[h]['max_date'] = None
-            data[h]['access'] = []
+            item = dict()
+            item['count'] = 0
+            item['info_count'] = 0
+            item['ok_count'] = 0
+            item['redir_count'] = 0
+            item['client_error_count'] = 0
+            item['server_error_count'] = 0
+            item['other_count'] = 0
+            item['min_date'] = None
+            item['max_date'] = None
+            item['client_error_quota'] = 0
+            item['access'] = []
+            data[h] = item
 
 
-def access_histogram(data):
+def access_diagram(data, out_base_name):
     """
-    Histogram per access host
+     Per access host
     :param data: reorganized dictionary with access data
-    :return: a matplotlib plot
+    :param out_base_name: basic name for saving the diagram
+    :return:
     """
-    global LOG
-    LOG.info('Histogram')
+    global LOG, CFG
+    LOG.info('Diagram (access)')
+    # 1 Selection of data
+    threshold = int(CFG['diagram']['access_threshold'])
     items = data.keys()
     items = filter(_is_local_ip, items)
-    items = list(filter(lambda it: data[it]['count'] > 5, items))
-    objects = tuple(k for k in items)
-    y_pos = np.arange(len(objects))
+    items = list(filter(lambda it: data[it]['count'] > threshold, items))
+    # 2 prepare display data.
+    hosts = items
+    y_pos = np.arange(len(hosts))
     count = list()
     for k in items:
         count.append(data[k]['count'])
 
+    plt.rcdefaults()
+    plt.figure(figsize=(14, 10))
     plt.barh(y_pos, count, align='center', alpha=0.5)
-    plt.yticks(y_pos, objects)
-    plt.xlabel('Access counter')
-    plt.ylabel('hosts')
-    plt.title('Access from hosts')
+    plt.yticks(y_pos, hosts)
+    plt.xlabel('Non-local access counter > 5')
+    plt.ylabel('Hosts')
+    plt.title('Access from non-local hosts')
 
-    return plt
+    plt.savefig(out_base_name + '-ext-diag.png')
+
+
+def access_client_error_diagram(data, out_base_name):
+    """
+         Client error quota per host
+        :param data: reorganized dictionary with access data
+        :param out_base_name: basic name for saving the diagram
+        :return:
+     """
+    global LOG, CFG
+    LOG.info('Diagram (client-error)')
+    threshold = int(CFG['diagram']['access_threshold'])
+    ce_threshold = float(CFG['diagram']['client_error_threshold'])
+    items = data.keys()
+    items = filter(_is_local_ip, items)
+    items = list(filter(lambda it: data[it]['client_error_quota'] > ce_threshold and data[it]['count'] > threshold,
+                        items))
+
+    y_pos = np.arange(len(items))
+    count = list()
+    for k in items:
+        count.append(data[k]['client_error_quota'])
+
+    plt.rcdefaults()
+    plt.figure(figsize=(14, 10))
+    plt.barh(y_pos, count, align='center', alpha=0.5)
+    plt.yticks(y_pos, items)
+    plt.xlabel('Non-local access client error quota > ' + str(ce_threshold))
+    plt.ylabel('Hosts')
+    plt.title('Access from non-local hosts, client error quota > ' + str(ce_threshold))
+
+    plt.savefig(out_base_name + '-ext-client-err.png')

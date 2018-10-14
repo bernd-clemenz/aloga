@@ -14,7 +14,7 @@ import os
 import sys
 
 
-def datetime_converter(o):
+def _datetime_converter(o):
     """
     Called by converter
     :param o: data item
@@ -34,7 +34,7 @@ def save_data(data_file, data_store):
     aloga.LOG.info('Saving access data file as JSON')
     if len(data_store) > 0:
         with open(data_file + '.json', 'w') as f:
-            f.write(json.dumps(data_store, indent=2, sort_keys=True, default=datetime_converter))
+            f.write(json.dumps(data_store, indent=2, sort_keys=True, default=_datetime_converter))
 
 
 def save_data_as_csv(data_file, data_store):
@@ -58,17 +58,15 @@ def save_data_as_csv(data_file, data_store):
                     f.write(line)
 
 
-def save_results(r_data, r_plot, out_base_name):
+def save_results(r_data, out_base_name):
     """
     All save operations in one call
     :param r_data: internal data container
-    :param r_plot: plot result
     :param out_base_name: base name of output files
     :return:
     """
     save_data(out_base_name, r_data)
     save_data_as_csv(out_base_name, r_data)
-    r_plot.savefig(out_base_name + '.png')
 
 
 def _check_for_old_data(out_file_base_name):
@@ -87,7 +85,8 @@ def _check_for_old_data(out_file_base_name):
 
 def _load_old_data(out_file_base_name):
     """
-    Load data from previous operations.
+    Load data from previous operations. Also convert
+    datetime-strings in datetime-objects.
     :param out_file_base_name: the basic output file name
     :return: content as dictionary
     """
@@ -103,6 +102,11 @@ def _load_old_data(out_file_base_name):
 
 
 def _old_data(out_file_base_name):
+    """
+    Load data if they already exist.
+    :param out_file_base_name: base name for output
+    :return: data from old file, if existing
+    """
     aloga.LOG.info("handle existing data")
     if _check_for_old_data(out_file_base_name):
         return _load_old_data(out_file_base_name)
@@ -110,15 +114,17 @@ def _old_data(out_file_base_name):
     return None
 
 
-def analyze_log_file(alogfile, nogeo, old_data):
+def analyze_log_file(alogfile, nogeo, old_data, out_file_base_name):
     """
     Do all analysis in one shot.
     :param alogfile: file to analyze
     :param nogeo: flag, controls if geo-ip data are fetched, defaults to True
                   NO geo-data are fetched.
+    :param old_data: previously stored data
+    :param out_file_base_name: basic file name for storing
     :return: internal data store, matplotlib plot as sequence
     """
-    aloga.LOG.info("analyze")
+    aloga.LOG.info("Analyze ...")
     r_data = ExtractorListener.parse_log_file(aloga.LOG, alogfile)
     r_data = aloga.reorg_list_in_dict(r_data)
     if old_data is not None:
@@ -126,10 +132,11 @@ def analyze_log_file(alogfile, nogeo, old_data):
     if not nogeo:
         aloga.find_location_of_hosts(r_data)
     aloga.basic_statistics(r_data)
-    r_plot = aloga.access_histogram(r_data)
+    aloga.access_diagram(r_data, out_file_base_name)
+    aloga.access_client_error_diagram(r_data, out_file_base_name)
 
     # TODO add further analysis and reports
-    return r_data, r_plot
+    return r_data
 
 
 if __name__ == '__main__':
@@ -151,8 +158,8 @@ if __name__ == '__main__':
 
         old_data = _old_data(args.out)
 
-        data, plot = analyze_log_file(args.alogfile, args.nogeo, old_data)
-        save_results(data, plot, args.out)
+        data  = analyze_log_file(args.alogfile, args.nogeo, old_data, args.out)
+        save_results(data, args.out)
 
         aloga.LOG.info('done.')
     except Exception as x:

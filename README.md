@@ -23,6 +23,7 @@ they are not PEP8 compliant.
 ## Configuration
 The module is configured by a traditional ini-file.
 
+### Section aloga
 |Name | Description |
 |-----|-------------|
 | log.file | Name of the logging file |
@@ -30,6 +31,11 @@ The module is configured by a traditional ini-file.
 | timeout | Timeout for HTTP requests |
 | ipstack.key | Access key for ipstack API |
 
+### Section diagram
+|Name | Description |
+|-----|-------------|
+| access_threshold | minimum number of requests to put item in diagrams |
+| client_error_threshold | minimum client error/access ratio |
 
 ## Installation
 Anaconda users:
