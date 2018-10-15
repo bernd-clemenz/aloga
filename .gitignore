@@ -115,3 +115,11 @@ venv.bak/
 /dist/
 /aloga.ini
 /etc/example/
+/conpack.csv
+/conpack-ext-client-err.png
+/conpack-ext-diag.png
+/conpack.json
+/pluton-ext-client-err.png
+/pluton-ext-diag.png
+/pluton.json
+/pluton.csv

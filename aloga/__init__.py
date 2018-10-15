@@ -232,7 +232,8 @@ def _status_type_counters(access_data):
 
 def _time_of_access(access_data):
     """
-
+    Creator method to return the next 'datetime' entry in an
+    access-data list.
     :param access_data:
     :return: the next datetime-entry
     """

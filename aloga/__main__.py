@@ -114,21 +114,21 @@ def _old_data(out_file_base_name):
     return None
 
 
-def analyze_log_file(alogfile, nogeo, old_data, out_file_base_name):
+def analyze_log_file(alogfile, nogeo, previous_data, out_file_base_name):
     """
     Do all analysis in one shot.
     :param alogfile: file to analyze
     :param nogeo: flag, controls if geo-ip data are fetched, defaults to True
                   NO geo-data are fetched.
-    :param old_data: previously stored data
+    :param previous_data: previously stored data
     :param out_file_base_name: basic file name for storing
     :return: internal data store, matplotlib plot as sequence
     """
     aloga.LOG.info("Analyze ...")
     r_data = ExtractorListener.parse_log_file(aloga.LOG, alogfile)
     r_data = aloga.reorg_list_in_dict(r_data)
-    if old_data is not None:
-        r_data = aloga.merge(old_data, r_data)
+    if previous_data is not None:
+        r_data = aloga.merge(previous_data, r_data)
     if not nogeo:
         aloga.find_location_of_hosts(r_data)
     aloga.basic_statistics(r_data)
@@ -158,7 +158,7 @@ if __name__ == '__main__':
 
         old_data = _old_data(args.out)
 
-        data  = analyze_log_file(args.alogfile, args.nogeo, old_data, args.out)
+        data = analyze_log_file(args.alogfile, args.nogeo, old_data, args.out)
         save_results(data, args.out)
 
         aloga.LOG.info('done.')
