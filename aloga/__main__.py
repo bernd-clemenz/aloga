@@ -134,6 +134,7 @@ def analyze_log_file(alogfile, nogeo, previous_data, out_file_base_name):
     aloga.basic_statistics(r_data)
     aloga.access_diagram(r_data, out_file_base_name)
     aloga.access_client_error_diagram(r_data, out_file_base_name)
+    aloga.world_map_svg(r_data, out_file_base_name)
 
     # TODO add further analysis and reports
     return r_data

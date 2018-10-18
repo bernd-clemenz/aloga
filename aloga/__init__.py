@@ -11,6 +11,7 @@ import requests
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 name = 'aloga'
 
@@ -362,3 +363,77 @@ def access_client_error_diagram(data, out_base_name):
     plt.title('Access from non-local hosts, client error quota > ' + str(ce_threshold))
 
     plt.savefig(out_base_name + '-ext-client-err.png')
+
+
+def _transform_mercator(x_len, y_len, lat_limit, long, lat):
+    global CFG, LOG
+    LOG.debug("Transform geo to image")
+
+    # directly in image coordinates
+    x = x_len + long / 180.0 * x_len
+    y_s = math.asinh(math.tan(math.radians(lat)))
+    y_g = math.asinh(math.tan(math.radians(lat_limit)))
+    y = y_len + y_s / y_g * y_len
+
+    # invert it
+    y = 2 * y_len - y
+
+    return x, y
+
+
+def _insert_markers_svg(markers, out_base_name):
+    global CFG, LOG
+    if len(markers) == 0:
+        return
+    template = CFG['map']['template']
+    marker_placeholder = CFG['map']['placeholder']
+
+    with open(template, "r") as f:
+        svg = f.readlines()
+
+    # scan for placeholder
+    pos = -1
+    for lnr in range(0, len(svg) - 1):
+        if svg[lnr].find(marker_placeholder) != -1:
+            pos = lnr
+            break
+    LOG.info("Placeholder at: {0}".format(pos))
+
+    if pos < 0:
+        LOG.error("Placeholder not found in SVG")
+        return
+
+    # insert markers
+    for m in markers:
+        svg.insert(pos, m)
+
+    # write updated file
+    LOG.info("Saving SVG file")
+    with open(out_base_name + '.svg', 'w') as f:
+        f.writelines(svg)
+
+
+def world_map_svg(data, out_base_name):
+    global CFG, LOG
+    LOG.info("World-Map")
+
+    # load transformation data from CFG
+    x_len = float(CFG['map']['x_len'])
+    y_len = float(CFG['map']['y_len'])
+    lat_limit = float(CFG['map']['lat_limit'])
+
+    markers = list()
+    marker_template = '<use xlink:href="#markerDot" x="{0}" y="{1}"><title>{2}</title></use>'
+
+    # iterate the hosts
+    for k, v in data.items():
+        if 'geodata' in v:
+            LOG.info("  Geodata found for: {0}".format(k))
+            x, y = _transform_mercator(x_len,
+                                       y_len,
+                                       lat_limit,
+                                       v['geodata']['longitude'],
+                                       v['geodata']['latitude'])
+            markers.append(marker_template.format(x, y, str(v['geodata']['longitude']) + ',' + str(v['geodata']['latitude'])))
+
+    _insert_markers_svg(markers, out_base_name)

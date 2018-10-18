@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg viewBox="-50 -50 100 100"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+   <!-- Position marker ISC -->
+   <circle id="markerDot" cx ="0" cy="0" r ="10" fill="red" stroke="black" stroke-width="2"/>
+ </defs>
+        <use xlink:href="#markerDot" x="20" y="20" />
+</svg>
