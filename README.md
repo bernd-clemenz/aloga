@@ -1,29 +1,34 @@
 # Access log analysis
+
 The module takes access logs as written by Tomcat and finds IPs and does some
 geo-location checks. The analyzer sits on top of common log file format
 grammar for ANTLR4, which was modified to allow IPv6 addresses. Geo-data
 are fetched via [ipstack](http://ipstack.com). A access key is required.
 
 ## Requirements
+
 * Python 3 installed
 * Internet connection
 * (optional) Java 8 Runtime installed and available via PATH environment variable
   if rebuilding or modification of the grammar is required.
 
 ## Build Lexer/Parser
+
 In case the grammar should be extended to cater for more cases:
 
 In the etc/grammar directory do the following:
 ```bash
- java -jar ../tools/antlr-4.7.1-complete.jar -Dlanguage=Python3 clf.g4
+ java -jar ../tools/antlr-4.8-complete.jar -Dlanguage=Python3 clf.g4
 ```
 Move the generated files to aloga/clf directory. Don't modify the files, even
 they are not PEP8 compliant.
 
 ## Configuration
+
 The module is configured by a traditional ini-file.
 
 ### Section aloga
+
 |Name | Description |
 |-----|-------------|
 | log.file | Name of the logging file |
@@ -32,12 +37,14 @@ The module is configured by a traditional ini-file.
 | ipstack.key | Access key for ipstack API |
 
 ### Section diagram
+
 |Name | Description |
 |-----|-------------|
 | access_threshold | minimum number of requests to put item in diagrams |
 | client_error_threshold | minimum client error/access ratio |
 
 ## Installation
+
 Anaconda users:
 >
 > Antlr4 runtime seems not to be part of Anaconda repositories
@@ -57,6 +64,7 @@ python setup.py install
 Setup takes care of resolving the dependencies.
 
 ## Execution
+
 The module is executable like this:
 
 ```bash

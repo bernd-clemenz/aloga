@@ -1,9 +1,13 @@
-# Generated from clf.g4 by ANTLR 4.7.1
+# Generated from clf.g4 by ANTLR 4.8
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
-from typing.io import TextIO
 import sys
+if sys.version_info[1] > 5:
+	from typing import TextIO
+else:
+	from typing.io import TextIO
+
 
 def serializedATN():
     with StringIO() as buf:
@@ -80,9 +84,10 @@ class clfParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.7.1")
+        self.checkVersion("4.8")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
+
 
 
 
@@ -163,6 +168,7 @@ class clfParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class LineContext(ParserRuleContext):
 
@@ -259,6 +265,7 @@ class clfParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class HostContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -307,6 +314,7 @@ class clfParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class LognameContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -346,6 +354,7 @@ class clfParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class UsernameContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -384,6 +393,7 @@ class clfParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class DatetimetzContext(ParserRuleContext):
 
@@ -440,6 +450,7 @@ class clfParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class RefererContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -478,6 +489,7 @@ class clfParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class RequestContext(ParserRuleContext):
 
@@ -518,6 +530,7 @@ class clfParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class UseragentContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -557,6 +570,7 @@ class clfParser ( Parser ):
             self.exitRule()
         return localctx
 
+
     class StatuscodeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -595,6 +609,7 @@ class clfParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
 
     class BytesContext(ParserRuleContext):
 

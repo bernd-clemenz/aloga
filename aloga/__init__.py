@@ -164,7 +164,7 @@ def _is_local_ip(ip):
     :param ip: the ip address to check
     :return: True if detected as a 'local'-Network address
     """
-    return True if ip in ['127.0.0.1', "0:0:0:0:0:0:0:1"] or not ip.startswith('192.') else False
+    return True if ip in ['127.0.0.1', "0:0:0:0:0:0:0:1"] else False
 
 
 def find_location_of_hosts(data):
@@ -429,11 +429,14 @@ def world_map_svg(data, out_base_name):
     for k, v in data.items():
         if 'geodata' in v:
             LOG.info("  Geodata found for: {0}".format(k))
-            x, y = _transform_mercator(x_len,
-                                       y_len,
-                                       lat_limit,
-                                       v['geodata']['longitude'],
-                                       v['geodata']['latitude'])
-            markers.append(marker_template.format(x, y, str(v['geodata']['longitude']) + ',' + str(v['geodata']['latitude'])))
+            try:
+                x, y = _transform_mercator(x_len,
+                                           y_len,
+                                           lat_limit,
+                                           v['geodata']['longitude'],
+                                           v['geodata']['latitude'])
+                markers.append(marker_template.format(x, y, str(v['geodata']['longitude']) + ',' + str(v['geodata']['latitude'])))
+            except Exception as x:
+                LOG.error(str(x))
 
     _insert_markers_svg(markers, out_base_name)

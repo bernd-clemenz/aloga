@@ -145,7 +145,7 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description="Simple access-log analyzer.")
     arg_parser.add_argument('--conf', type=str, default='aloga.ini')
     arg_parser.add_argument('--alogfile', type=str, default=None)
-    arg_parser.add_argument('--nogeo', type=bool, default=True)
+    arg_parser.add_argument('--nogeo', action='store_true')
     arg_parser.add_argument('--out', type=str, default=None)
     args = arg_parser.parse_args()
 
